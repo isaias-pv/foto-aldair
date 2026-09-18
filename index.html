@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Secreto - Pistas y Gustos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 35%, #f0fdf4 100%);
+            min-height: 100vh;
+        }
+        
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+
+        .card-shadow {
+            box-shadow: 0 20px 40px -15px rgba(225, 29, 72, 0.15), 0 0 20px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Glassmorphism modal backdrop */
+        .glass-backdrop {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Modal bounce animation */
+        @keyframes modalEnter {
+            0% {
+                opacity: 0;
+                transform: scale(0.85) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .animate-modal {
+            animation: modalEnter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Floating elements effect */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Camera Flash Overlay & Shutter Animations */
+        #cameraFlashOverlay {
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.05s ease-out;
+        }
+
+        @keyframes cameraFlashAnim {
+            0% { opacity: 0; transform: scale(1); }
+            15% { opacity: 0.95; transform: scale(1.03); }
+            40% { opacity: 0.8; transform: scale(1.01); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+
+        @keyframes shutterLensAnim {
+            0% { transform: scale(1); filter: brightness(1); }
+            20% { transform: scale(0.97); filter: brightness(1.8) contrast(1.2); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        .flash-active {
+            animation: cameraFlashAnim 0.45s ease-out forwards;
+        }
+
+        .shutter-snap {
+            animation: shutterLensAnim 0.45s ease-out forwards;
+        }
+    </style>
+</head>
+<body id="mainBody" class="flex flex-col min-h-screen justify-between items-center p-4 md:p-8 text-slate-800 transition-all duration-300">
+
+    <!-- Flash Overlay Layer -->
+    <div id="cameraFlashOverlay" class="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none">
+        <div class="w-full h-full bg-radial from-transparent via-white/50 to-black/30"></div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-xl flex flex-col items-center my-auto">
+        
+        <!-- Header Title Banner -->
+        <div class="text-center mb-6 floating">
+            <span class="inline-block bg-rose-100 text-rose-700 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-2 shadow-sm border border-rose-200">
+                🤫 Amigo Secreto 2026
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                ¡Aquí están mis pistas! 🎁
+            </h1>
+        </div>
+
+        <!-- Card Frame -->
+        <div class="w-full bg-white rounded-3xl p-3 sm:p-5 card-shadow border border-rose-100/80 transition-all duration-300 hover:shadow-2xl">
+            <div class="relative rounded-2xl overflow-hidden bg-slate-100 group">
+                <!-- Main Image (Secret Friend Details) -->
+                <img 
+                    id="secretCardImg"
+                    src="foto.jfif" 
+                    alt="Pistas Amigo Secreto" 
+                    class="w-full h-auto object-cover rounded-2xl shadow-inner transition-transform duration-500 group-hover:scale-[1.01]"
+                    onerror="this.onerror=null; this.src='https://placehold.co/600x800/fecdd3/9f1239?text=Pistas+Amigo+Secreto';"
+                />
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="mt-8 text-center w-full">
+            <button 
+                id="btnSaberMas"
+                onclick="openModal()"
+                class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-300 bg-gradient-to-r from-red-600 via-rose-600 to-rose-500 rounded-2xl shadow-lg hover:shadow-rose-500/35 hover:-translate-y-1 active:translate-y-0 focus:outline-none focus:ring-4 focus:ring-rose-300 w-full sm:w-auto min-w-[240px]"
+            >
+                <span>Saber más</span>
+                <svg class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-xs text-slate-400">
+        <p>¡Descubre a tu amigo secreto de la mejor manera! ✨</p>
+    </footer>
+
+    <!-- MODAL MEME POPUP -->
+    <div id="memeModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 glass-backdrop">
+        <div 
+            class="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-rose-100 text-center animate-modal"
+            onclick="event.stopPropagation()"
+        >
+            <!-- Close Button -->
+            <button 
+                onclick="closeModal()"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-full transition-colors focus:outline-none"
+                aria-label="Cerrar"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Modal Content -->
+            <div class="mt-2">
+                <span class="inline-block text-3xl mb-2">🧠🕵️‍♂️</span>
+                <h3 class="text-2xl font-black text-slate-900 tracking-tight">
+                    ¿Quieres saber más?
+                </h3>
+                
+                <!-- Meme Card Container -->
+                <div class="my-5 p-4 bg-amber-50 rounded-2xl border-2 border-dashed border-amber-300 flex flex-col items-center justify-center">
+                    
+                    <!-- Funny Meme Image Illustration -->
+                    <div class="relative w-full rounded-xl overflow-hidden mb-3 bg-amber-100 flex items-center justify-center p-2">
+                        <img 
+                            src="meme.jpg" 
+                            alt="Meme cat thinking" 
+                            class="w-full h-48 object-cover rounded-lg shadow-sm"
+                        />
+                        <div class="absolute inset-0 bg-black/20 rounded-lg"></div>
+                        <p class="absolute bottom-3 left-2 right-2 text-white font-extrabold text-lg sm:text-xl uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] tracking-wide">
+                            ¡Ingéniatela para preguntarme! 🤫🔥
+                        </p>
+                    </div>
+
+                    <!-- <p class="text-amber-900 font-bold text-base sm:text-lg italic font-handwriting">
+                        "El que busca... ¡encuentra! O me manda una malteada."
+                    </p> -->
+                </div>
+
+                <p class="text-slate-600 text-sm mb-6">
+                    Si te quedaron dudas sobre las cosas de cocina, ropa o sabores... ¡tendrás que ser muy creativo para averiguarlo sin revelar tu identidad! 😜
+                </p>
+
+                <!-- Modal Action Button -->
+                <button 
+                    onclick="triggerCameraSnap()"
+                    class="w-full py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                    <span>Entiendo! 😎</span>
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <circle cx="12" cy="13" r="3" stroke-width="2"></circle>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Audio Synth for Camera Shutter Sound (Web Audio API)
+        function playCameraShutterSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                // Noise buffer for mechanical shutter sound
+                const bufferSize = ctx.sampleRate * 0.12; // 120ms sound
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                // Highpass filter for crisp snap sound
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 1000;
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.8, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                noise.start();
+
+                // Second click for shutter release
+                setTimeout(() => {
+                    const clickOsc = ctx.createOscillator();
+                    const clickGain = ctx.createGain();
+                    clickOsc.type = 'triangle';
+                    clickOsc.frequency.setValueAtTime(1200, ctx.currentTime);
+                    clickOsc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
+
+                    clickGain.gain.setValueAtTime(0.5, ctx.currentTime);
+                    clickGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+
+                    clickOsc.connect(clickGain);
+                    clickGain.connect(ctx.destination);
+
+                    clickOsc.start();
+                    clickOsc.stop(ctx.currentTime + 0.05);
+                }, 50);
+
+            } catch (e) {
+                console.log('Web Audio API initialized or muted:', e);
+            }
+        }
+
+        // Camera Snap Trigger
+        function triggerCameraSnap() {
+            const flashOverlay = document.getElementById('cameraFlashOverlay');
+            const mainBody = document.getElementById('mainBody');
+
+            // Play Camera Shutter Sound
+            playCameraShutterSound();
+
+            // Apply Flash & Shutter Effects
+            flashOverlay.classList.remove('flash-active');
+            mainBody.classList.remove('shutter-snap');
+
+            // Force Reflow
+            void flashOverlay.offsetWidth;
+
+            flashOverlay.classList.add('flash-active');
+            mainBody.classList.add('shutter-snap');
+
+            // Close modal right at the peak of the flash (approx 150ms)
+            setTimeout(() => {
+                closeModal();
+            }, 150);
+
+            // Cleanup classes after animation finishes
+            setTimeout(() => {
+                flashOverlay.classList.remove('flash-active');
+                mainBody.classList.remove('shutter-snap');
+            }, 500);
+        }
+
+        // Trigger automatic confetti animation on page load
+        window.addEventListener('load', () => {
+            // Launch initial burst
+            fireConfetti();
+
+            // Additional small bursts for extra celebration
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.7 }
+                });
+            }, 300);
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.7 }
+                });
+            }, 600);
+        });
+
+        // Confetti burst function
+        function fireConfetti() {
+            var count = 200;
+            var defaults = {
+                origin: { y: 0.6 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+                colors: ['#e11d48', '#22c55e', '#f59e0b']
+            });
+            fire(0.2, {
+                spread: 60,
+                colors: ['#ffffff', '#000000', '#dc2626']
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                colors: ['#e11d48', '#ffffff']
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+        }
+
+        // Modal Controls
+        const modal = document.getElementById('memeModal');
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            // Extra subtle confetti when opening modal
+            confetti({
+                particleCount: 30,
+                spread: 50,
+                origin: { y: 0.5 }
+            });
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        // Close modal when clicking background overlay
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key press
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
